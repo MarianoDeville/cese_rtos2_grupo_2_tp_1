@@ -61,8 +61,8 @@ static QueueHandle_t hao_hqueue;
 
 /********************** external data definition *****************************/
 
-extern SemaphoreHandle_t hsem_button;
-extern SemaphoreHandle_t hsem_led;
+//extern SemaphoreHandle_t hsem_button;
+//extern SemaphoreHandle_t hsem_led;
 
 extern ao_led_handle_t led_red;
 extern ao_led_handle_t led_green;
@@ -72,22 +72,28 @@ extern ao_led_handle_t led_blue;
 
 /********************** external functions definition ************************/
 
+
+void task_ao_ui_init(void)
+{
+	hao_hqueue = xQueueCreate(QUEUE_LENGTH_, QUEUE_ITEM_SIZE_);
+	while(NULL == hao_hqueue) { }
+
+	BaseType_t status;
+	status = xTaskCreate(task_ui, "task_ao_ui", 128, NULL, tskIDLE_PRIORITY, NULL);
+	while (pdPASS != status) { }
+}
+
 void task_ui(void *argument)
 {
-	// esta parte no iria en la task del OA sino en su funcion init
-	hao_hqueue = xQueueCreate(QUEUE_LENGTH_, QUEUE_ITEM_SIZE_);
-	while(NULL == hao_hqueue)
-	{
-	// error
-	}
 
-  while (true)
-  {
-	  msg_event_t event_msg;
-	  if (pdPASS == xQueueReceive(hao_hqueue, &event_msg, portMAX_DELAY)) {
+	while (true) {
 
-			switch (event_msg)
-			{
+		msg_event_t event_msg;
+
+		if (pdPASS == xQueueReceive(hao_hqueue, &event_msg, portMAX_DELAY)) {
+
+			switch (event_msg) {
+
 				case MSG_EVENT_BUTTON_PULSE:
 					LOGGER_INFO("[UI] led red %d", AO_LED_MESSAGE_ON);
 					ao_led_send(&led_red, AO_LED_MESSAGE_ON);
@@ -105,16 +111,18 @@ void task_ui(void *argument)
 			}
 		}
 		LOGGER_INFO("[UI] led activate");
-  }
+	}
 }
 
 
 bool ao_ui_send_event(msg_event_t msg) {
 
 	BaseType_t status = xQueueSend(hao_hqueue, &msg, 0);
-	if (status != pdPASS){
+	if (status != pdPASS) {
+
 		LOGGER_INFO("[UI] Cola llena: evento %d perdido", msg);
 	} else {
+
 		LOGGER_INFO("[UI] Evento enviado: %d", msg);
 	}
 	return (status == pdPASS);

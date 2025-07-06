@@ -57,6 +57,7 @@ typedef enum
 
 /********************** external functions declaration ***********************/
 
+void task_ao_ui_init(void);
 void task_ui(void* argument);
 bool ao_ui_send_event(msg_event_t msg);
 

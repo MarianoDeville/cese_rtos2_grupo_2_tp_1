@@ -63,44 +63,32 @@ ao_led_handle_t led_red, led_green, led_blue;
 void app_init(void)
 {
 
-  BaseType_t status;
-  led_red.color = AO_LED_COLOR_RED;
-  led_green.color = AO_LED_COLOR_GREEN;
-  led_blue.color = AO_LED_COLOR_BLUE;
+	BaseType_t status;
+	led_red.color = AO_LED_COLOR_RED;
+	led_green.color = AO_LED_COLOR_GREEN;
+	led_blue.color = AO_LED_COLOR_BLUE;
 
-  status = xTaskCreate(task_button, "task_button", 128, NULL, tskIDLE_PRIORITY, NULL);
-  while (pdPASS != status)
-  {
-    // error
-  }
+	status = xTaskCreate(task_button, "task_button", 128, NULL, tskIDLE_PRIORITY, NULL);
+	while (pdPASS != status) { }
 
-  status = xTaskCreate(task_ui, "task_ui", 128, NULL, tskIDLE_PRIORITY, NULL);
-  while (pdPASS != status)
-  {
-    // error
-  }
 
-  status = xTaskCreate(task_led, "task_led", 128, (void* const)&led_red, tskIDLE_PRIORITY+1, NULL);
-  while (pdPASS != status)
-  {
-    // error
-  }
 
-  status = xTaskCreate(task_led, "task_led", 128, (void* const)&led_green, tskIDLE_PRIORITY+1, NULL);
-  while (pdPASS != status)
-  {
-    // error
-  }
+	task_ao_ui_init();
 
-  status = xTaskCreate(task_led, "task_led", 128, (void* const)&led_blue, tskIDLE_PRIORITY+1, NULL);
-  while (pdPASS != status)
-  {
-    // error
-  }
 
-  LOGGER_INFO("app init");
 
-  cycle_counter_init();
+	status = xTaskCreate(task_led, "task_led", 128, (void* const)&led_red, tskIDLE_PRIORITY+1, NULL);
+	while (pdPASS != status) { }
+
+	status = xTaskCreate(task_led, "task_led", 128, (void* const)&led_green, tskIDLE_PRIORITY+1, NULL);
+	while (pdPASS != status) { }
+
+	status = xTaskCreate(task_led, "task_led", 128, (void* const)&led_blue, tskIDLE_PRIORITY+1, NULL);
+	while (pdPASS != status) { }
+
+	LOGGER_INFO("app init");
+
+	cycle_counter_init();
 }
 
 /********************** end of file ******************************************/

@@ -114,7 +114,6 @@ void task_ui(void *argument)
 	}
 }
 
-
 bool ao_ui_send_event(msg_event_t msg) {
 
 	BaseType_t status = xQueueSend(hao_hqueue, &msg, 0);
